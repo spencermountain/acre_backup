@@ -1,0 +1,323 @@
+  <acre:script>
+     var query=acre.request.params.query||'arson cases in ontario since 2001';
+    </acre:script>
+
+<html>
+  <head>
+  <style>
+    a.key:link {color:#3EC137;
+text-decoration: none; }
+    </style>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+    <script>
+       $(document).ready(function(){
+
+         var query = $("#query").val();
+         var thequery=query;
+
+query=trim(query)
+query=query.toLowerCase();
+         query=query.replace(/^(liste )?les /,'');
+         query=query.replace(/^(list )?the /,'');
+
+         $("#answer").html("<img src='http://acre.freebase.com/api/trans/raw/guid/9202a8c04000641f800000000abf4b47'/> querying '"+query+"'..");
+
+
+         var id=''; var text=''; var legislation=''; var courts=''; var jurisdiction='';var startdate=''; var enddate=''; var language='';
+
+
+         ///////
+         //search subject
+           if(query.match(/ (law|legislation|statute|législation|regulation|réglementation|droit|lois)s?( |$)/)){
+
+             query=query.replace(/ (law|legislation|statute|législation|regulation|réglementation|droit|lois)s?/,'')
+           legislation='legislation';
+           }
+
+         if(query.match(/(les )?(court case|case|law suit|lawsuit|prosecution|litigation|indictment|trial|poursuite)s?( |$)/)){
+           query=query.replace(/(les )?(court case|case|law suit|lawsuit|prosecution|litigation|indictment|trial|poursuite)s?/,'');
+           courts='courts';
+           }
+
+         if(query.match(/[^ ] v(ersu)?s?\.? [^ ]/)){
+           id=query;
+           courts='courts';
+           //url='http://www.canlii.org/eliisa/search.do?language=en&searchPage=eliisa/mainPageSearch.vm&caselaw=courts&id='+text;
+
+
+
+           if(query.match(/ v\. .*?, [0-9]{3} u\.s\. [0-9]{3}/i)){//# Roe v. Wade, 410 U.S. 113 (1973)
+             var say= 'this looks like an American Supreme Court case, try <a href="http://www.oyez.org/search/apachesolr_search/'+query+'">oyez?</a>';
+                 $("#say").html(say);
+         }
+
+
+           }
+
+
+         //docket
+        if(query.match(/[0-9| |-]{6}/)&&!query.match(/[a-z]/)){
+           id=query;
+         }
+
+         //citation
+         if(query.match(/(s\.c\.r\.|qctaq|fc|qccs|canlii|onca)/)){//lazy catch some citations
+           id=query;
+         }
+         // [1990] 3 S.C.R. 570
+
+
+         /////////
+         //location
+        if(query.match(/ (with)?in(side)? [^ ]/)||query.match(/ dans [^ ]/)||query.match(/ en [^ ]/))
+            {
+              if(query.match(/ dans [^ ]/)){
+              query=query.replace(/ dans /, ' in ')
+              language='fr';
+            }
+              var location=query.match(/ [with]?in[side]? (.*)/)
+            location=location[1];
+                  location=location.replace(/ (since|after|debuis|apres).*/,'')||location;
+
+             if(location=='canada'){jurisdiction='ca';}
+             if(location=='ontario'){jurisdiction='on';}
+             if(location=='b.c.'){jurisdiction='bc';}
+             if(location=='bc'){jurisdiction='bc';}
+             if(location=='british columbia'){jurisdiction='bc';}
+             if(location=='colombie-britannique'){jurisdiction='bc';}
+             if(location=='colombie britannique'){jurisdiction='bc';}
+             if(location=='alberta'){jurisdiction='ab';}
+             if(location=='saskatchewan'){jurisdiction='sk';}
+             if(location=='quebec'){jurisdiction='qc';}
+             if(location=='manitoba'){jurisdiction='mn';}
+             if(location=='nova scotia'){jurisdiction='ns';}
+             if(location=='nouvelle-ecosse'){jurisdiction='ns';}
+             if(location=='nouvelle ecosse'){jurisdiction='ns';}
+             if(location=='nouvelle écosse'){jurisdiction='ns';}
+             if(location=='pei'){jurisdiction='pe';}
+             if(location=='prince edward island'){jurisdiction='pe';}
+             if(location=='ile-du-prince-edouard'){jurisdiction='pe';}
+             if(location=='ile du prince edouard'){jurisdiction='pe';}
+             if(location=='yukon'){jurisdiction='yk';}
+             if(location=='northwest territores'){jurisdiction='nt';}
+             if(location=='newfoundland'){jurisdiction='nl';}
+             if(location=='terre neuve'){jurisdiction='nl';}
+             if(location=='terre-neuve'){jurisdiction='nl';}
+
+             if(jurisdiction!=''){  query= query.replace(/ (with)?in(side)? .*/,'');}
+              // alert(location+'---'+jurisdiction);
+            }
+         //&jurisdiction=ca&jurisdiction=bc&jurisdiction=ab&jurisdiction=sk&jurisdiction=mb&jurisdiction=on&jurisdiction=qc&jurisdiction=nb&jurisdiction=ns&jurisdiction=pe&jurisdiction=nl&jurisdiction=yk&jurisdiction=nt
+
+         ///dates
+           if(query.match(/ (since|after|debuis|apres) [^ ]/))
+            {var startdate=query.match(/ (since|after|debuis|apres) (.*)/)
+           startdate=startdate[2];
+             startdate=trim(startdate);
+           var reg=' since '+startdate;
+               query= query.replace(reg,'');
+           var reg=' after '+startdate;
+               query= query.replace(reg,'');
+           var reg=' depuis '+startdate;
+               query= query.replace(reg,'');
+           var reg=' apres '+startdate;
+               query= query.replace(reg,'');
+
+             //language
+              if(query.match(/ (debuis|apres) [^ ]/))
+              { language='fr'; }
+           }
+
+         if(query.match(/ (before|avant) [^ ]/))
+            {var enddate=query.match(/ (before|avant) (.*)/)
+           enddate=enddate[2];
+             enddate=trim(enddate);
+           var reg=' before '+enddate;
+               query= query.replace(reg,'');
+
+                if(query.match(/ (before|avant) [^ ]/))
+              { language='fr'; }
+           }
+
+         //bucket
+         if(legislation==''&&courts==''){//just search
+           text=query;
+           legislation='legislation';
+           courts='courts';
+            }
+         if(id==''){text=query;}
+
+
+         //make the url
+         var tmp='&id='+id+'&text='+text+'&startDate='+startdate+'&endDate='+enddate;
+         if(legislation!=''){tmp+='&legislation='+legislation;}
+         if(jurisdiction!=''){tmp+='&jurisdiction='+jurisdiction;}
+         if(courts!=''){tmp+='&caselaw='+courts;}
+         if(language!=''){tmp+='&language='+language;}
+         if(language==''){tmp+='&language=en';}
+
+         var url='http://www.canlii.org/eliisa/search.do?language=en&searchTitle=Advanced+Search&searchPage=eliisa/mainPageSearch.vm&sortOrder=relevance'+tmp;
+         // var url='http://www.canlii.org/eliisa/search.do?language=en*-*searchPage=eliisa%2FmainPageSearch.vm*-*caselaw=courts*-*id=r vs newton';
+         // alert(url);
+
+          var answer= askit(url);
+         //$("#answer").html("queried '"+url+"'..");
+
+         //////////////////////////////////
+         ///now do it
+         ////////////////////
+
+
+         //fetch it
+         function askit(url){
+             url=url.replace(/&/g,'*-*');//encoding;)
+           //url=encodeURI(url);
+           //alert(url);
+           var answer=  $.ajax({
+             url: 'proxy.html',
+             data:'url='+url,
+             timeout: 5000,
+             success: function(answer){
+               var results=$(".searchResult",answer).append('<p></p>');;
+
+               //$(".searchResult", results).append('<p>Test</p>');
+
+
+               var first=$(".searchResult:first",answer);
+               var count=results.length||0;
+
+               //fix rel links
+               var links = $('a', results);
+               for (var a in links){
+                 if(a == parseInt(a)){
+                   var b = links[a];
+                   var c = $(b);
+                   var temp = c.attr('href');
+                   if(temp != undefined){
+                     var test = temp.substring(0,4);
+                     if(test != 'mail' && test != 'http' && test != '#'){
+                       c.attr('href','http://www.canlii.org'+temp);
+                     }
+                   }
+                 }
+               }
+
+               if(count==1){
+                 //go to first link
+                 var goodurl=links[0];
+                 window.location = goodurl;
+               }
+
+               $("#count").html("found "+count+" results.");
+               if(count==0){$("#answer").html('no results');}
+               if(count!=0){$("#answer").html(results);}
+
+               //describe
+               var show=' searched for "'+text+'" ';
+               if(legislation!=''){show+=   'within the legislation ';}
+               if(legislation!=''&&courts!=''){show+=   'and ';}
+               if(courts!=''){show+=   'within the courts ';}
+               if(jurisdiction!=''){show+=   'in '+jurisdiction+' ';}
+               if(startdate!=''){show+=   'since '+startdate+'. ';}
+               if(language!=''){show+=   'in '+language+'. ';}
+                      url= url.replace(/\*\-\*/g,'&');
+                      url= url.replace(/\|/g,'&');
+                show+=  ' <a href="'+url+'" >show it in canlii</a> '
+               $("#did").html(show);
+
+               //next button
+               if(count==100){url=url+'&requestedPage=2';
+                              $("#next").html('<a href="'+url+'">next page</a>');
+                          }
+
+
+               //recon keywords
+               //.keywords span
+               var all=$("#answer").html();
+               $(' .keywords span, all').each(function(index) {
+
+                 var theurl="reconcile?query=";
+                 theurl+=$(this).text();
+                 theurl=theurl.replace(' —','');
+                 var el=this;
+                 var keyword=$(this).text();
+                 keyword=keyword.replace(' —','');
+                 //alert(index + ': ' +theurl);
+                 /*  $.get(theurl, function(data){
+                   alert( data);
+                   //$(this).html(data);
+               });*/
+
+
+                 $.ajax({
+                   type: "GET",
+                   url: theurl,
+                   success: function(msg){
+                     //alert( "Data Saved: " + msg );
+                     if(msg!=''){
+                     var found='<a class="key" href="http://freebase.com/view'+msg+'">'+keyword+'</a> —';
+                     $(el).html(found);
+                    }
+                   }
+                 });
+
+
+
+
+               });
+
+               // alert(keyword);
+
+             },
+             error: function(XMLHttpRequest, textStatus, error){
+               $("#answer").html("oops error "+text+url+'| ');
+             }
+           });
+
+         }//fn
+
+
+
+
+     function trim(strText) {
+    if(strText!=''){
+    // this will get rid of leading spaces
+    while (strText.substring(0,1) == ' ')
+        strText = strText.substring(1, strText.length);
+
+    // this will get rid of trailing spaces
+    while (strText.substring(strText.length-1,strText.length) == ' ')
+        strText = strText.substring(0, strText.length-1);
+  }
+   return strText;
+}
+
+       });
+
+    </script>
+
+  </head>
+  <body>
+
+
+    <div id="say">
+  </div>
+    <div id="did" style="color:grey; font-size:9; display:inline;">
+  </div>
+
+    <div id="count" style="color:grey; text-align:right;font-size:9; ">
+  </div>
+    <hr/>
+
+    <div id="answer">
+  </div>
+
+    <div id="next">
+  </div>
+
+
+    <input type="hidden" value="$query"  id="query" name="q" /><br/>
+
+
+  </body>
+</html>

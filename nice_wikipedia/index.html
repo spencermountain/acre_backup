@@ -1,0 +1,397 @@
+<html>
+  <head>
+    <title>home</title>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
+    <link rel="stylesheet" href="cool.css">
+    <script src="http://keep.spencermountain.user.dev.freebaseapps.com/icanhaz" type="text/javascript"></script>
+    <acre:script>
+
+      var id = acre.request.params.id || '/en/thom_yorke';//
+      var title = acre.request.params.title||null;
+
+      //get wpid
+      var query=[{
+        "id":id,
+        "name":null,
+        "type":"/common/topic",
+        "key": [{
+          "namespace": "/wikipedia/en_id",
+          "value":     null,
+          "optional":"required"
+        }],
+        "/common/topic/image": [{
+          "id":     null,
+          "optional":  true,
+          "limit":1
+        }],
+        "s:type":[{"name":null}],
+        "/common/topic/article": [{
+          "text": {
+            "chars":     null,
+            "maxlength": 450
+          },
+          "optional":  true
+        }],
+        "weblink": [{
+          "url": null,
+          "optional":  true,
+          "description":null,
+          "category":null
+        }]
+      }];
+      var fb=acre.freebase.mqlread(query,{extended:true}).result;
+
+      if(fb[0]['/common/topic/article'][0]){
+        var description=fb[0]['/common/topic/article'][0].text.chars;
+        fb[0].description = description.replace(/ ?\(.{0,400}?\)/g, '');
+      }
+
+      if(fb[0]['/common/topic/image'][0]){
+        fb[0].image='http://freebase.com/api/trans/image_thumb'+fb[0]['/common/topic/image'][0].id+'?maxwidth=400&maxheight=400&errorid=/m/0djw4wd';
+      }
+
+      var link={}
+          for(var i in fb[0].weblink){
+            if(fb[0].weblink[i].category=="Official Website"){
+              link['official site']=fb[0].weblink[i].url;
+            }
+            if(fb[0].weblink[i].description=="MySpace Page"){
+              link['myspace']=fb[0].weblink[i].url;
+            }
+          }
+      fb[0].links=link;
+
+      console.log(fb)
+        var wpid = acre.request.params.wpid || fb[0].key[0].value;
+      var url='http://en.wikipedia.org/w/index.php?curid='+wpid+'&action=render&redirect';
+      var html= acre.urlfetch(url).body||'';
+      html=acre.markup.bless(html);
+    </acre:script>
+
+    <script>
+
+      $(document).ready(function(){
+
+
+        //clean the html
+        $("#answer > #toc").remove();
+        $("#answer > #coordinates").remove();
+        //$("#answer > table").remove();
+        $("sup").remove();
+        $("#answer > .dablink").remove();
+        $("#answer > .toccolours").remove();
+        $("#answer > .infobox").remove();
+        $("#answer > .rellink").remove();
+        $("#answer > .new").remove();
+        $("#answer > .citation").remove();
+        $("#answer > .metadata").remove();
+        $("#answer > .mbox-small").remove();
+        $("#answer > .reference").remove();
+        $("#answer > .reflist").remove();
+        $("#answer > .portal").remove();
+        $("#answer > .noprint").remove();
+        $("#answer > .references").remove();
+        $("#answer > .references-small").remove();
+        $("#answer > .thumb").remove();
+        $("#answer > .seealso").remove();
+        $("#answer > .Template-Fact").remove();
+        $("#answer > ul").remove();
+        $("#answer > dd").remove();
+        $("#answer > dl").remove();
+        $("#answer > li").remove();
+        //  $("#answer > h1").remove();
+        //  $("#answer > h2").remove();
+        //$("#answer > h3").remove();
+        //$("#answer > h4").remove();
+        //$("#answer > h5").remove();
+        //$("#answer > h6").remove();
+        $("#answer > small").remove();
+        $("#answer > .navbox").remove();
+        $("#answer > .navbox-abovebelow").remove();
+        $("#answer > .printfooter").remove();
+        $("#answer > .mbox-text").remove();
+        // $("span > .IPA").remove();
+        $("#answer > .nowraplinks").remove();
+        $("#answer > img").remove();
+        $("#answer > .collapsible").remove();
+        $("#answer > .geo-default").remove();
+        $("#answer > .autocollapse").remove();
+        $("h2 > .editsection").remove();
+        $("h3 > .editsection").remove();
+        $("h4 > .editsection").remove();
+        $("h5 > .editsection").remove();
+        $("h6 > .editsection").remove();
+
+        var html=$("#answer").html();
+        html=html.replace(/([a-z])\.([A-Z])/g, '$1. $2');//bug
+        $("#answer").html(html);
+        //reset links to point here
+        $("a").each(function(){
+          var link=$(this).attr('href');
+          if(link.match(/\.wikipedia.org\/wiki\//i) && !link.match(/\.wikipedia.org\/wiki\/Category/i)){
+            link='/nicewp?id='+makeid(link);
+            $(this).attr('href',link);
+          }
+        });
+
+
+        /**
+        *  quote a unicode string to turn it into a valid mql /type/key/value
+        */
+        function mqlkey_quote(s) {
+          var mqlkey_start = 'A-Za-z0-9';
+          var mqlkey_char = 'A-Za-z0-9_-';
+          var MQLKEY_VALID = new RegExp('^[' + mqlkey_start + '][' + mqlkey_char + ']*$');
+          var MQLKEY_CHAR_MUSTQUOTE = new RegExp('([^' + mqlkey_char + '])', 'g');
+          if (MQLKEY_VALID.exec(s))   // fastpath
+            return s;
+          var convert = function(a, b) {
+            var hex = b.charCodeAt(0).toString(16).toUpperCase();
+            if (hex.length == 2)
+              hex = '00' + hex;
+            if (hex.length == 3)
+              hex = '0' + hex;
+            return '$' + hex;
+          };
+          x = s.replace(MQLKEY_CHAR_MUSTQUOTE, convert);
+          if (x.charAt(0) == '-' || x.charAt(0) == '_') {
+            x = convert(x,x.charAt(0)) + x.substr(1);
+          }
+          return x;
+        }
+
+        //console.log('/wikipedia/en/'+mqlkey_quote('Ádám_Pintér'))
+
+        function makeid(link){
+          if(link.match(/\.wikipedia.org\/wiki\//i) && !link.match(/\.wikipedia.org\/wiki\/Category/i)){
+            link=link.replace(/.*?wikipedia.org\/wiki\//,'');
+            link='/wikipedia/en/'+mqlkey_quote(link);
+            return link;
+          }
+          return null;
+        }
+
+
+        //split the article into sections
+        var results=[];
+
+        //get intro
+        var append = '';
+        $("#answer").prepend("<span id='verytop'></span>");
+        $("#verytop").nextUntil("h2").each(function() {
+          var intro=$(this).html();
+          intro=intro.replace(/ ?\(.{0,400}?\)/g, '');
+          append += intro;
+        });
+        results[results.length] = {
+          "title": "Intro",
+          "text": append
+        };
+        var blacklist = {
+          "references": true,
+          "external links": true,
+          "notes": true,
+          "see also":true
+        };
+        //get other sections
+        $('h2').each(function(index) {
+          var title = $(".mw-headline", this).text();
+          if (blacklist[title.toLowerCase()] == null) {
+            var append = '';
+            var sel = 'h2:eq(' + index + ')';
+            $(sel).nextUntil("h2").each(function() {
+              append += $(this).html();
+            });
+            if (append != '') {
+              results[results.length] = {
+                "title": title,
+                "text": append
+              };
+            }
+          }
+        });
+
+
+        var colors={background:{light:'#f9f8f7', dark:'#343a3f'},
+                    links:{show:'#2FC2EF', hide:'#D6DBDF'}
+                   };
+          console.log(results)
+          render(results)
+
+
+            function render(results){
+
+              //intro
+              var sentences=sentenceparser(results[0].text);
+              sentences[0]=sentences[0].replace(/^.{0,70}? (is|was|will be|were|are|refers to|describes|outlines|consists of) (a |an |the )?(\,| )?/, '$2');
+              var intro=sentences.join('<p></p>')
+                  $('#intro').html(intro)
+
+                    var html='';//make the html
+              results=results.slice(0,5);
+              for(var i in results){
+                if(results[i].title.match(/see also/i) ){continue;}
+                var imgs=[];
+                $('<div> '+results[i].text+' </div>').find('a').each(function(){
+                  imgs.push('<img src="http://freebase.com/api/trans/image_thumb'+$(this).attr('href').replace('/nicewp?id=','')+'?maxwidth=100&maxheight=100&errorid=/m/0djw4wd"/>');
+                });
+                html+='<span>';
+                html+='<a href="#" class="thelink" style="font-size:30px;">'+results[i].title+'</a><br/> ';
+                html+='<ul class="theblurb" style="display:none; width:800px; font-size:14px;">'
+                  html+='<table><tr><td>'+sentenceparser(results[i].text).join('<p></p')+'</td>'
+                    html+='<td>'+imgs.slice(0,6).join('<br/>')+'</td></tr></table>'
+                html+='</br></ul>';
+                html+='</span>';
+              }
+              $('#tabshow').html('<p></p>'+html)
+
+
+                //events
+                $('.thelink').click(function(){
+                  $(this).siblings(".theblurb").toggle();
+                  return false;
+                });
+
+              $('#pivot').click(function(){
+                pivot();
+                $("#showpivot").toggle();
+                return false;
+              });
+
+              $("#links").click(function(){
+                $("a").each(function(){
+                  $(this).css('text-decoration','none');
+                  $(this).css('color','grey');
+                });
+                $(this).html('show links');
+                return false;
+              });
+
+              $("#dark").click(function(){
+                if($("body").css('background')==colors.backgound.light){
+                  $("body").css('background', colors.backgound.light);
+                }else{
+                  $("body").css('background', colors.backgound.dark);
+                }
+                return false;
+              });
+
+            }
+
+
+
+
+
+        function sentenceparser(text){
+          var tmp = text.split(/(\S.+?[.])(?=\s+|$)/g);
+          var sentences = [];
+          //join acronyms, titles
+          for (var i in tmp) {
+            if (tmp[i]) {
+              tmp[i] = tmp[i].replace(/^\s+|\s+$/g, ''); //trim extra whitespace
+              //join common abbreviations + acronyms
+              if (tmp[i].match(/ (mr|dr|mrs|miss|misses|mister|sir|esq|mstr|jr|sr|st|lit|inc|fl|ex|eg|jan|feb|mar|apr|jun|aug|sep|oct|nov|dec)\. ?$/i) || tmp[i].match(/[ |\.][a-z]\.?$/i)) {
+                tmp[parseInt(i) + 1] = tmp[i] + ' ' + tmp[parseInt(i) + 1];
+              }
+              else {
+                sentences.push(tmp[i]);
+                tmp[i] = '';
+              }
+            }
+          }
+          //cleanup afterwards
+          var clean = [];
+          for (var i in sentences) {
+            sentences[i] = sentences[i].replace(/^\s+|\s+$/g, ''); //trim extra whitespace
+            if (sentences[i]) {
+              clean.push(sentences[i]);
+            }
+          }
+          return clean;
+        }
+
+
+        function pivot(){
+          var text=''
+              for(var i in results){
+                text+=results[i].text;
+              }
+          var sentences=sentenceparser(text);
+
+          var links=[];
+          for(var i in sentences){
+            var text=$('<div> '+sentences[i]+' </div>').text()
+                $('<div> '+sentences[i]+' </div>').find('a').each(function(){
+                  var link=$(this).attr('href');
+                  var id=link.replace("/nicewp?id=",'');
+                  var name=link.replace("/nicewp?id=/wikipedia/en/",'');
+                  name=name.replace(/_/g,' ');
+                  var image='http://www.freebase.com/api/trans/image_thumb'+id+'?maxwidth=200&maxheight=200&errorid=/m/0djw4wd'
+                      links.push({link: $(this).attr('href'), id:id, sentence:text, name:name, image:image});
+                });
+          }
+          console.log(links)
+          var html='<tr>';//render
+          for(var i in links){
+            if(i%4==0){html+='</tr><tr>'}
+            html+='<td style="width:400px;"><img title="'+links[i].sentence+'" src="'+links[i].image+'"/></br>'+links[i].name+'</td>'
+            }
+          $("#showpivot").html(html+'</tr>')
+            }
+
+
+
+      });
+
+    </script>
+  </head>
+  <body>
+
+
+    <div id="top" style=" width:100%; top:0px; text-align:right; font-size:14px;">
+      <span>
+       <input type="text" style="
+          background-color:#343a39;
+          color:grey;
+          font-size:2em;
+          border: 1px solid grey;
+          " id="search"/>
+        <a href="#" id="pivot" >pivot</a>
+        <a href="#" id="dark">dark</a>
+        <a href="#" id="links" >quiet</a>
+      </span>
+    </div>
+
+    <table id="showpivot"></table>
+
+    <table style="width:100%; top:0px;">
+      <tr>
+        <td style="width:300px;">
+          <h2>${fb[0].name}</h2>
+        </td>
+        <Td></td>
+      </tr>
+      <tr>
+        <td style=" vertical-align:text-top; top:0px;">
+          <div acre:if="fb[0].image" >
+            <img src="${fb[0].image}"/>
+            <br/>
+            <span acre:for="i,the in fb[0].links"> <a href="${the}">${i}</a> </span>
+          </div>
+        </td>
+        <td>
+
+          <div id="intro"></div>
+
+          <div id="tabshow"></div>
+        </td>
+      </tr>
+
+    </table>
+
+
+
+    <div id="show" style="width: 705px;"></div>
+    <div style="" id="answer" style="display:none;">$html</div>
+  </body>
+</html>

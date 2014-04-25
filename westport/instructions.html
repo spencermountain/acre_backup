@@ -1,0 +1,293 @@
+
+<html>
+  <head>
+    <link rel="commands" href="http://www.spencerwaterbed.com/soft/ubiquity/westport.js" name="Westport" />
+    <link rel="search" type="application/opensearchdescription+xml" href="opensearch" title="Query Westport" />
+  <style>
+    .do{position:relative;} .h3{left:-40;}
+
+   a:link              { color:#416975; text-decoration:underline; }
+    a:visited           { color:#416975; text-decoration:underline; }
+    a:hover             { color:#416975; text-decoration:underline; }
+    a:active            { color:#416975; text-decoration:underline; }
+
+   </style>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+     <script>
+       $(document).ready(function(){
+              //examples
+         $(".do").click(function () {//alert($(this).html());
+           $("#query").val($(this).html());
+           run();
+           function run()//query it
+           { var text = $("#query").val();
+             $("#answer").html("querying '"+text+"'..");
+             text='q='+text;
+         $.ajax({
+           type: "GET",
+           url: "ok.html",
+           data: text,
+           success: function(answer){
+             $("#answer").html(answer);
+           },
+           error: function(XMLHttpRequest, textStatus, error){
+             $("#answer").html("oops error "+error);
+           }
+         });
+            }  //run
+         });
+
+
+    $("#query").keyup(function () {
+
+      try{window.clearTimeout(timeoutID);}catch(e){}//for fast typing
+      timeoutID = window.setTimeout(run, 800);
+      //
+
+
+          function run()//query it
+      { var text = $("#query").val();
+        $("#answer").html("querying '"+text+"'..");
+        text='q='+text;
+         $.ajax({
+           type: "GET",
+           url: "ok.html",
+           data: text,
+           success: function(answer){
+             $("#answer").html(answer);
+           },
+           error: function(XMLHttpRequest, textStatus, error){
+             $("#answer").html("oops error "+error);
+           }
+         });
+      }
+
+    });
+
+  });
+    </script>
+
+  </head>
+  <body>
+    <span style="position:absolute; text-align:right; right:20%; width:20%;">
+
+    <input type="text" style='height:20; position:relative;  font-size:10px;  '  size='30' value="" length="50"  id="query" name="q" />
+    <div id="answer">  </div>
+    </span>
+
+
+    <span style="position:relative; text-align:left; left:100;  width:600; font-family:Helvetica;">
+
+    this program is a simple interface to the information in <a href="http://www.freebase.com">freebase.com</a>. <br/>
+it can respond appropriately to several hundred million queries, about anything.
+      <p></p>
+ <iframe src="http://player.vimeo.com/video/13992710?autoplay=1" width="600" height="340" frameborder="0"></iframe><p><a href="http://vimeo.com/13992710">Freebase + Ubiquity</a> from <a href="http://vimeo.com/user3942305">spencer cooly</a> on <a href="http://vimeo.com">Vimeo</a>.</p>
+<p></p>
+<h3>search</h3>
+if the query is simple, it will do a keyword search. <br/>
+<a href="#" class="do">ralph wiggum</a><br/>
+<a href="#" class="do">university of baghdad</a><br/>
+<a href="#" class="do">banana</a><br/>
+<a href="#" class="do">chelsea clinton</a><br/>
+
+if it thinks its a question but it's not, force a seach by typing:<br/>
+<a href="#" class="do">search what is the what</a><br/>
+or <a href="#" class="do">? party of five</a><br/>
+
+
+<p></p>
+<h3>lists</h3>
+if you search for something that is a 'type of thing', it will list (some of) them.<br/>
+<a href="#" class="do">pets</a><br/>
+<a href="#" class="do">golfers</a><br/>
+<a href="#" class="do">satellites</a><br/>
+
+force a list-response by typing: <br/>
+<a href="#" class="do">list of astronauts </a><br/>
+
+<p></p>
+<h3>search filters</h3>
+you can make your search smarter by specifying what the results should be. <br/>
+
+<a href="#" class="do">brian politician</a> will list politicians named brian. <b>brian (politician)  </b> works too.<br/>
+<a href="#" class="do">washington city </a><br/>
+<a href="#" class="do">romeo and juliet movie </a><br/>
+<p></p>
+you can force a filtered search by typing:<br/>
+<a href="#" class="do">winston churchill (school)</a><br/>
+or <a href="#" class="do">towns named dildo</a><br/>
+<p></p>
+
+some handy freebase searches: <br/>
+<a href="#" class="do">user spencer</a> will find freebase users named spencer<br/>
+<a href="#" class="do">astronomy base</a> will just search for freebases 'bases'<br/>
+
+<p></p>
+<h3>questions</h3>
+this program can answer simple questions<br/>
+it is able to understand what you are looking for by identifying prepositions like 'of', 'in', 'by' etc.
+<p></p>
+
+<a href="#" class="do">birthdate of david bowie</a><br/>
+<a href="#" class="do">number of cards in euchre</a><br/>
+<a href="#" class="do">fields of crytography</a><br/>
+<a href="#" class="do">books by miranda july</a><br/>
+<a href="#" class="do">episodes of seinfeld  </a><br/>
+<a href="#" class="do">members of the bnp</a><br/>
+<a href="#" class="do">anne boleyn's cause of death</a><br/>
+<a href="#" class="do">language of morocco</a><br/>
+<a href="#" class="do">days in february</a><br/>
+<a href="#" class="do">bands on sub-pop</a><br/>
+<a href="#" class="do">nationality of pierre trudeau</a><br/>
+<a href="#" class="do">buildings by frank gehry</a><br/>
+<a href="#" class="do">the saddledome's home team </a><br/>
+<a href="#" class="do">guitars of jimmy page</a><br/>
+<a href="#" class="do">types of communism</a><br/>
+<a href="#" class="do">people killed in the titanic</a><br/>
+<a href="#" class="do">slogan of nike</a><br/>
+<a href="#" class="do">people buried in arlington cemetary</a><br/>
+<a href="#" class="do">official languages of morocco</a><br/>
+<a href="#" class="do">national anthem of poland</a><br/>
+
+<p></p>
+it can also understand queries without their prepositions, it just takes longer: <br/>
+<a href="#" class="do">heavy metal bands</a><br/>
+<a href="#" class="do">zoology journals</a><br/>
+<a href="#" class="do">747 accidents</a><br/>
+<a href="#" class="do">nirvana albums</a><br/>
+<a href="#" class="do">harp players</a><br/>
+<a href="#" class="do">ubc graduates</a><br/>
+<a href="#" class="do">first burningman</a><br/>
+<a href="#" class="do">aircanada destinations</a><br/>
+
+
+<p></p>
+<h3>website identification</h3>
+  if you enter an internet link, this program will be able to identify it, or what it's about.<br/>
+<a href="#" class="do"  >http://en.wikipedia.org/wiki/Tunisia</a>  - (a link it gets from freebase's <a href="http://www.freebase.com/view/user/nix/types/uri_template">>uri templates</a>)<br/>
+<a href="#" class="do" >http://www.apple.com</a>  - (a link it finds from stored weblinks)<br/>
+         <a href="#" class="do" >http://spencerhold.wordpress.com/2010/01/21/how-many-people-are-in-space/</a>  - (a page it doesn't know, but with outgoing links it does)<br/>
+      <a href="#" class="do" >http://www.chass.utoronto.ca/~ikalmar/illustex/baudriterror.htm</a>  - (a page with no links that it sends to zemanta)<br/>
+
+      use this service independently <a href="http://westport.freebaseapps.com/indexlink">here</a>
+
+<p></p>
+<h3>time server</h3>
+if you ask <a href="#" class="do"  >current time in namibia</a> it will figure out it's time according to its location, utc and dst offset.
+  <br/>
+         <a href="#" class="do" >time in moose jaw</a>   <br/>
+         <a href="#" class="do" >time at the cn tower</a>   <br/>
+if you ask it the timezone of something that has multiple timezones, it will answer its 'middle timezone' - <a href="#" class="do" >current time in russia</a>
+
+  <br/>  use this service independently <a href="http://ubiquity.freebaseapps.com/indexgeonames">here</a>
+      <p></p>
+<h3>Specific templates</h3>
+there are several hand-written templates for common types of questions<br/>
+
+<p></p>
+<h4>where is [location]</h4>
+<a href="#" class="do">where is the cn tower</a><br/>
+<a href="#" class="do">where is the Kingdom Centre</a><br/>
+<a href="#" class="do">where is cheddar</a><br/>
+
+<p></p>
+<h4>when was [event]</h4>
+<a href="#" class="do">when was the suez crisis</a><br/>
+<a href="#" class="do">when is the chilcot inquiry</a><br/>
+<a href="#" class="do">when was the orange revolution</a><br/>
+
+<p></p>
+<h4>[gender] [type]</h4>
+<a href="#" class="do">female golfers</a><br/>
+<a href="#" class="do">female criminals</a><br/>
+<a href="#" class="do">male monarchs</a><br/>
+
+<p></p>
+<h4>[demonym] [type]</h4>
+<a href="#" class="do">canadian politicians</a><br/>
+ <a href="#" class="do">french wrestlers</a><br/>
+ <a href="#" class="do">japanese directors</a><br/>
+
+<!--<a href="#" class="do">books about wrestling</a><br/>-->
+
+
+<p></p>
+<h2>about</h2>
+
+    </span>
+
+
+
+
+
+    <span style="position:relative; text-align:left; left:80; top:60;width:400;">
+this program works by using the prepositions [of, in, by, at..]
+in your query to squeeze it into a question that it can throw at freebase.<br/>
+
+if there are no prepositions, it just permutates the words.<br/>
+     <p></p>
+     Freebase has <a href="http://www.freebase.com/developer">a bunch of great apis</a>, which made making this program pretty easy.
+<br/>
+
+      it has been written to fail nicely - it should, at the least, drop you off infront of a good wikipedia article.
+   <p></p>
+
+if your query is supposed to have an 'apostrophe s', use it. don't be lazy. (it's a preposition)<br/>
+
+<p></p>
+in addition to the <a href="http://www.freebase.com/tools/appeditor/#app=${acre.environ.script_namespace}">source code</a>, all the data that this program uses is
+<a href="http://www.freebase.com/view/base/natlang/property_alias/-/base/natlang">written into freebase</a>, so
+editable by anyone.
+<p></p>
+
+      If it doesn't answer a question that you think it should, <a href="http://www.freebase.com">add an alias</a> to a topic, type, or property.
+
+<p></p>
+This is usually the problem.
+<p></p>
+      Making this program, I created almost 3000 aliases for freebase properties:<br/>
+[albums = 'records', sport_official = 'referee', birth_date = 'date of birth'] etc.<br/>
+
+
+<p></p>
+i am not actually a very strong programmer, and
+this program is, if anything, a function of the collaberative power of cool people on the internet.<br/>
+It uses open-source code from <a href="http://linker.freebaseapps.com/">Linker</a>,
+<a href="http://heyfreebase2.pak21.user.dev.freebaseapps.com/index">Hey freebase!</a>,
+<a href="http://plural.dfhuynh.user.dev.freebaseapps.com/test_type_names">Pluralizer</a>,
+<a href="http://sizzle.freebaseapps.com/">Sizzle</a>,
+ <a href="http://www.geonames.org/">Geonames</a>,
+ <a href="http://jquery.com/">JQuery</a>,
+ <a href="http://propbox.daepark.user.dev.freebaseapps.com/index">Propbox</a>,
+<a href="http://cubed.freebaseapps.com/">Cubed</a>,
+ <a href="http://acre.freebase.com">Acre</a><br/>
+
+It is  ad-free, stores no information, and was made to impress my colleagues.
+
+<p></p>
+
+  you can use this program on your website, or whatever.<br/>
+
+run it <a href="http://www.spencerwaterbed.com/soft/ubiquity/westport.html">in ubiquity</a><br/>
+load it <a href="http://userscripts.org/scripts/show/67091">inside google</a><br/>
+      output <a href="http://meadow.freebaseapps.com/index">to google maps</a><br/>
+
+<p></p>
+   the nice api is
+ <a href="http://westport.freebaseapps.com/ok?q=director of billy madison">http://westport.freebaseapps.com/ok?q=director of billy madison</a><br/>
+
+
+<p></p>
+   and the json api is
+ <a href="http://westport.freebaseapps.com/answer?q=treatments of diabetes">http://westport.freebaseapps.com/answer?q=treatments of diabetes</a><br/>
+
+<p></p>
+
+you should totally use it.
+
+<p></p>
+      <a href="http://www.freebase.com/discuss/threads/user/spencermountain">msg me</a>
+<p></p>
+    </span>
+    </body>
+    </html>

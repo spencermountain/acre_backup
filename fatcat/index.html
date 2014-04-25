@@ -1,0 +1,538 @@
+
+ <acre:script>
+
+
+
+     var state='first'; var wrote=false;
+
+
+
+
+   //try to write
+    var artlist = acre.request.body_params.artlist || '';
+     var type = acre.request.body_params.type || '';
+
+
+   if(artlist!=''&&type!=''){ //writng
+                     var state='wrote';  var wrote=true;
+
+   acre.oauth.get_authorization();
+
+              if(typeof(artlist)=='string'){//if its just one,make it an array
+       var temp=artlist; artlist=[]; artlist[0]=temp;}
+
+
+            var artbox = [];
+                     // get (all) checkbox data
+                    for(var i in artlist)
+                    {var str='artbox['+i+']=  acre.request.body_params.artbox'+i+' || "no";';
+                     eval(str);
+                     //acre.write('blah'+i+artbox[i]);
+                     }
+                      //revise artlist based on checkbox selection
+                    var newartlist=[];var n=0;
+                    for(var i in artbox)
+                    {if(artbox[i]=='yes'){newartlist[n]=artlist[i];n++;}
+                    }
+                    artlist=newartlist; newartlist=[];
+     // acre.write('thelist= '+artlist);
+            //remove doubles
+            var unique=acre.require('unique');
+            artlist=unique.unique(artlist);
+
+
+            //ok we have our articles to write...
+           var property = acre.request.body_params.property || '';
+              var value = acre.request.body_params.data || '';
+             if(value==''){  var value = acre.request.body_params.dataid || '';}//one of two inputs
+
+
+           var firstcat = acre.request.body_params.firstcat || '';
+
+           var universalwriter = acre.require('universalwriter');
+           var output= universalwriter.universalwriter(artlist, type, property, value)||'';
+
+
+             // count edits made
+               var edits = 0;
+               if(output!=null){
+            var output=JSON.stringify(output);
+                      var match = 'inserted';
+                        for (var im = 0; im < output.length; im++) {
+                              if (match == output.substr(im,match.length)) { edits++; }
+                            }//forCategory:Earthquakes in Canada
+                      }
+
+
+       }//if writing
+
+     //sort out categories
+       //check to see if its stage2 (has a category)
+
+       var catlist = acre.request.params.cat || '';  var method='get';
+
+         if(catlist==''){var catlist = acre.request.body_params.cat || '';
+                         if(catlist!=''){var method='post';}
+                        }
+     var random = acre.request.params.random || '';
+       if(random!=''){catlist=getrandomcat(); method='get'; }
+       if(catlist!=''){
+
+           if(typeof(catlist)=='string'){//if its just one,make it an array
+       var temp=catlist; catlist=[]; catlist[0]=temp;}
+
+         // get (all) checkbox data
+         var catbox = [];
+       for(var i in catlist)
+       { if(method=='post'){var str='catbox['+i+']=  acre.request.body_params.catbox'+i+' || "no";';}
+         if(method=='get'){var str='catbox['+i+']=  acre.request.params.catbox'+i+' || "no";';}
+        eval(str);
+      }
+
+
+
+     //revise catlist based on checkbox selection
+     var newcatlist=[];var n=0;
+     for(var i in catbox)
+     {if(catbox[i]=='yes'){newcatlist[n]=catlist[i];n++;}
+      }
+         catlist=newcatlist; newcatlist=[];
+
+     }//ifcategorynotempty
+
+   //check for up-navigation
+    var parentcat = acre.request.params.parent || '';
+   if(parentcat!=''){
+   var parent=acre.require('parent');
+   catlist=parent.parents(parentcat)||'';
+   }
+
+
+   ///////
+
+    if(artlist==''&&type==''){ //not writng, just reading
+
+       //acre.write(catlist+'---');
+   //
+     if(catlist!=''){
+          //k read time
+       var state='read';
+     var artlist=[]; var a=0; var nextcatlist=[];
+
+for (var q in catlist){
+try{  if (!catlist[q].match(/category:/i)){catlist[q]='category: ' +catlist[q];}
+          catlist[q]=catlist[q].replace(/ /g,'_');
+          var result= getmembers(catlist[q]);  var c=0;
+          for ( var i in result.query.categorymembers )
+          {the = result.query.categorymembers[i].title;
+           if (the.match(/category:/i)){nextcatlist[c]=the.replace(/ /g,'_'); c++;} //its a category
+               else{
+                if ((!the.match(/portal:/i))&&(!the.match(/file:/i))){  artlist[a]=the; a++;} //its an article
+                }
+            }//sort out query
+      //  var unique=acre.require('unique');
+      // nextcatlist=unique.unique(nextcatlist);
+
+
+     }//try
+         catch(err){acre.write('error. didnt like ' +catlist[q] + err); }
+}//for
+
+
+      //remove category dupes
+       var temlist=[];   var t=0;
+       for (var nq in nextcatlist){
+         var found=0;
+         for (var q in catlist){
+           if(catlist[q]==nextcatlist[nq])
+           {found=1; break;   }
+         }
+         if(!found){temlist[t]=nextcatlist[nq]; t++;}
+       }
+       nextcatlist=[];
+       nextcatlist=temlist;
+
+     //convert articles to ids
+     var idlist=[]; var namelist=[]; var typelist=[]; var p=0; var theguid; var imagelist=[]; var blurbs=[];
+      for ( var i in artlist)
+      {   var article=artlist[i];
+             if (article!=''&&article!=null){
+      article=article.replace(/ /g,'_');
+      article=acre.freebase.mqlkey_quote(article);
+       article=article.replace("005Cu",''); //bugfix
+
+               // acre.write(article)
+
+
+             article='/wikipedia/en/' + article;
+           var query = {
+             "simple:id" : null,
+            "name":null,
+            "/common/topic/article" : [{ "id" : null  }],
+            "type":[],
+            "/common/topic/image" : [{ "id" : null, "limit" : 1,"optional": true}],
+             "id" : article
+           }
+       try{
+               var result = acre.freebase.MqlRead(query).result ; //acre.write(JSON.stringify(result));
+                     if(result["simple:id"]!=''){
+                       idlist[p]=result["simple:id"]; namelist[p]=result.name;
+                       typelist[p]=result.type;
+                       imagelist[p]='';
+                       try{   imagelist[p]=result["/common/topic/image"][0].id ||'';
+                        imagelist[p] = acre.freebase.imgurl(imagelist[p], 100, 100 )||'';
+                            }catch(e){}
+                       try{blurbs[p]= acre.freebase.get_blob(result["/common/topic/article"][0].id,"raw").body;
+                          blurbs[p]=blurbs[p].replace('&lt;p&gt;','');
+                           blurbs[p]=blurbs[p].replace('&lt;/p&gt;','');
+                          }catch(e){blurbs[p]='';}
+                       p++;
+                     }
+          }
+        catch(err){}//acre.write('read error at '+article+err);
+      }//if!empty
+     }//for
+      artlist=idlist;
+       var halflist=artlist.length /2;
+       //acre.write(halflist);
+
+ }//ifnotemptycategory
+   }//if not writing
+
+
+
+function getmembers(category){//json gets messed up somehow, so i regex it
+   var url = "http://en.wikipedia.org/w/api.php?action=query&list=categorymembers&format=json&cmlimit=300&cmtitle=" + escape(category);
+ var result = acre.urlfetch(url);   // http://en.wikipedia.org/w/api.php?action=query&list=categorymembers&format=jsonfm&cmlimit=20&cmtitle=Category:Physics
+ str=JSON.stringify(result.body);
+   str = str.substr(1);
+   str=str.substring(0, str.length-1);
+  str=str.replace(/\\"/g,'"');
+    str=str.replace(/\\\\"/g,'\\"');
+  return JSON.parse(str); //(array)
+    }
+
+
+       function getrandomcat(category)
+  {var url='http://en.wikipedia.org/w/api.php?action=query&format=json&list=random&rnlimit=1&rnnamespace=14';
+    var result = acre.urlfetch(url);
+    str=JSON.stringify(result.body);    str = str.substr(1);
+    str=str.substring(0, str.length-1);   str=str.replace(/\\"/g,'"');
+    str=str.replace(/\\\\"/g,'\\"');   var j= JSON.parse(str);
+    return j.query.random[0].title;
+    }
+
+      if (state=='first')
+      {var query= [{
+  "id": "/guid/9202a8c04000641f800000000e5f451b",
+  "/base/wikipedia/category_introspection/fatcats": [{
+    "value": null,
+    "limit": 20
+  }]
+}]
+      try{
+      var the = acre.freebase.MqlRead(query) ; //acre.write(JSON.stringify(result));
+   var fatcats=the.result[0]["/base/wikipedia/category_introspection/fatcats"];
+   }
+     catch(err){}
+      }
+   </acre:script>
+    <html>
+      <head>
+
+
+ <title>Fat cat</title>
+  <link type="text/css" rel="stylesheet" href="http://freebaselibs.com/static/suggest/0.9.3/suggest.min.css">
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+  <script type="text/javascript" src="http://freebaselibs.com/static/suggest/0.9.3/suggest.min.js"></script>
+  <script type="text/javascript">
+      var type='/people/person'; //tmp
+
+  jQuery(function($) {
+
+
+    //topic one
+   $("#suggestid")
+     .suggest({
+       "type": ["/common/topic"]
+     })
+     .bind("fb-select",
+   function(e, data) {
+        document.getElementById("topicid").value=data.id;
+     });
+
+
+
+    //linked ones
+  $("#example1")
+  .suggest({
+    "type": ["/type/type"],
+    "type_strict": "any"
+  })
+  .bind("fb-select",
+  function(e, data) {
+     document.getElementById("typeid").value=data.id;
+    type=data.id;
+     dosuggest2(type);
+  });
+
+    function dosuggest2(type){
+      var str='  $("#example2")  .suggest({    "type": "/type/property",    "mql_filter": [{"/type/property/schema": "'+type+'"}]  })  .bind("fb-select",  function(e, data) {       document.getElementById("propid").value=data.id; document.getElementById("datadata").style.display="block";});';
+  eval(str);
+      document.getElementById("propertyspan").style.display='block';
+      document.getElementById("buttonspan").style.display='block';
+    }
+
+
+
+    });
+
+
+
+
+       function show()
+      { document.getElementById("output").style.display="block";
+        document.getElementById("toggle").style.display="none";
+        }
+
+    function toggleall(all) {
+      if(document.getElementsByName('artbox0').item(0).checked == true){
+        for (i=0; i<all; i++) {
+          var name="artbox"+i;
+           var box = document.getElementsByName(name).item(0);
+          box.checked = false;
+        }
+      }
+      else{
+        for (i=0; i<all; i++) {
+          var name="artbox"+i;
+           var box = document.getElementsByName(name).item(0);
+          box.checked = true;
+        }
+       }
+      }
+
+
+
+   </script>
+        <style>
+          .result{ background: #ACD18A; left: 250; color:white;}
+
+          .orphan a:link {  color: black;   }
+          .orphan a:visited {  color: black;   }
+          .orphan a:hover { color: black;   }
+          .orphan a:active {   color: black; }
+          .not_orphan a:link {  color: #184878;   }
+          .not_orphan a:visited {  color: #184878;   }
+          .not_orphan a:hover { color: #184878;   }
+          .not_orphan a:active {   color: #184878; }
+      .top{position:absolute;
+        background:#184878 ;
+        left: 0;
+        top: 0;
+        width:700;
+        height:30;
+        color:grey;
+        }
+        .bottom{position:relative;
+        background:#899FAB;
+        left: 0;
+        top: 10;
+        width:200;
+        height:10;
+        }
+          .top2{position:absolute;
+        background:#899FAB;
+        left: 25;
+        top: 3;
+        width:200;
+        height:10;
+        }
+          .top3{position:absolute;
+        background:#899FAB;
+        left: 25;
+        top: 3;
+        width:200;
+        height:10;
+        }
+
+          </style>
+        </head>
+
+
+  <acre:block if="state=='wrote'">
+
+      <body onload="document.theform.submit();" style=' font-family: HelveticaNeue-Light, Helvetica, Arial; '>
+
+        <div class='top3'></div>
+        <h3><span class="results"> made $edits edits.<br/></span>
+        <a href="#" onclick="show()" style="font-size:75%; " id="toggle">show output</a><br/>
+          reloading, hold on....</h3>
+
+        <form action="" method="post" id="theform" name="theform" style="position:relative; top:10; text-align:center">
+
+          <span acre:for="i,the in catlist" >
+            <input type="hidden" name="catbox${i}" value="yes" >
+            <input type="hidden" name="cat" value="$the"/>
+          </span>
+         </form>
+
+
+ </acre:block>
+
+ <acre:block if="state=='read'">
+
+      <body style=' font-family: HelveticaNeue-Light, Helvetica, Arial; '>
+
+     <div class='top2'></div>
+   <p></p>
+        <form action="http://fatcat.freebaseapps.com/" method="post" style="position:relative; margin-bottom:60px;font-size:10; top:50; left:100; color:black">
+
+Also include these:<br/>
+
+  <!--ones its doing already-->
+  <span acre:for="i,the in catlist" >
+    <input type="checkbox" name="catbox${i}" value="yes" checked>
+    $the  <br/>
+   <input type="hidden" name="cat" value="$the"/>
+</span>
+<!--ones its not doing yet-->
+ <span acre:for="o,the in nextcatlist">   ${o+catlist.length}
+   <input type="checkbox" name="catbox${o+catlist.length}" value="yes" >
+   $the   <br/>
+   <input type="hidden" name="cat" value="$the"/>
+   </span>
+  <input type="submit" value="include" />
+ </form>
+        <p></p><p></p><p style="text-align:center">
+   <a href="http://fatcat.freebaseapps.com/index?parent=${catlist[0]}">parent categories</a> - <a href='http://fatcat.freebaseapps.com/index?random=yes&catbox0=yes'>random</a>-     <a href="http://fatcat.freebaseapps.com/index"> home</a>
+   </p>
+    <hr WIDTH="25%" COLOR="#184878"  SIZE="6" name="mid">
+   <p style="text-align:center">
+     <a onClick="toggleall(${artlist.length})" href="#mid">toggle all</a> </p>
+    <p></p>
+<form action="http://fatcat.freebaseapps.com/" method="post"  >
+  <table>
+  <div acre:for="i,the in artlist">
+    <tr> <td>
+      <span acre:if="imagelist[i]!=null && imagelist[i]!=''"> <img  src="${imagelist[i]}"  />      </span> <!--http://freebase.com/api/trans/image_thumb/${imagelist[i]}?maxwidth=100&maxheight=100"-->
+      </td><td>
+      <input type="checkbox" name="artbox${i}" value="yes" checked>
+    <span acre:if="typelist[i].length<=1" class="orphan"> <a href='http://freebase.com/view${the}'>${namelist[i]} </a>    </span>
+    <span acre:if="typelist[i].length>1" class="not_orphan"> <a href="http://freebase.com/view${the}">${namelist[i]} </a>-     </span>
+    <span acre:for="type in typelist[i]" acre:if="type!='/common/topic'" style="font-size:60%; font-style: italic; color:#51627E;"> $type ,    </span>
+      <span style="color:grey;font-size:9;"> ${blurbs[i]}</span>
+    <input type="hidden" name="artlist" value="$the"/>
+    </td>
+  </tr>
+  </div>
+        </table>
+  <span acre:if="artlist.length!=0" style="position:relative; left:50;">
+   add them to the type
+    <input id="example1" type="text" /><div id="log1"></div>
+       <input type="hidden" name="type" id="typeid" value="" />
+
+   <span id="propertyspan" style="display:none">
+  and this property <input id="example2" type="text" />
+    <input type="hidden" name="property" id="propid" value="" /><span style="color:grey; font-size:75%">(optional)</span>
+   </span>
+  <br/>
+   <span id="datadata" style="display:none">
+        .. connects to this id<input id="suggestid"  type="text" /> <span style="color:grey; font-size:75%">(like Canada)</span>
+      <input type="hidden" name="dataid" id="topicid"  value=""  />
+  <br/>or<br/>
+  ... has this value<input id="value" type="text"  name="data" /><span style="color:grey; font-size:75%">(like 1999)</span> </span>
+   </span>
+
+  <!--also repeat the categories, for reuse-->
+   <span acre:for="i,the in catlist" >
+    <input type="hidden" name="catbox${i}" value="yes" >
+    <input type="hidden" name="cat" value="$the"/>
+  </span>
+
+
+
+
+  <input type="hidden" name="firstcat" id="typeid" value="${catlist[0]}" />
+  <span id="buttonspan" style="display:none"> <input type="submit" value="write" /></span>
+</form>
+
+ <p></p>
+visit <a href="http://en.wikipedia.org/wiki/${catlist[0]}">${catlist[0]}</a> <p></p>
+   <span style='color:grey;'>
+      <a href="http://fatcat.freebaseapps.com/index"> home</a>
+   </span>
+</acre:block>
+
+  <acre:block if="state!='read'&&state!='wrote'"><!--home-->
+
+ <!--login stuff-->
+  <acre:script>
+  var env = acre.environ;
+  var user = acre.freebase.get_user_info();
+  var return_url = encodeURIComponent(env.request_url);
+</acre:script>
+
+
+      <body style=' font-family: HelveticaNeue-Light, Helvetica, Arial; '>
+
+     <div class='top'>choose a wikipedia category:</div>
+<p></p>  <p></p><p></p>
+        <form action="http://garden.freebaseapps.com/fromcat" method="post" style="position:relative; top:10; text-align:center">  <br/>
+      <input type="text" name="thesecats" size='30' style='height:60; font-size:27px; left:60; top:40;' value="Category:Earthquakes in Canada"/>
+   <input type="hidden" name="catbox0" value="yes"/>
+          depth:<select name="depth">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+
+   <input type="submit" value="do" />
+
+      <br/> <a  style='POSITION:RELATIVE; left:99; font-size:13px;' class='orphan' href='http://fatcat.freebaseapps.com/index?random=yes&catbox0=yes'>random</a>
+   </form><p></p><p></p>
+    <hr WIDTH="25%" COLOR="#184878"  SIZE="6" >
+    <p></p>
+    <span style="position:relative; left:76;">
+    you can use <a href="javascript:  var here=''+window.location; if(here.match('wikipedia.org/wiki/Category')){ here=here.replace('http://en.wikipedia.org/wiki/',''); window.location='http://fatcat.freebaseapps.com/index?catbox0=yes&cat='+here;} ">
+    this </a> bookmarklet --- <a href="http://userscripts.org/scripts/show/57085">or this</a> greasemonkey extension as well
+      <br/> </span> <p></p>
+    or try these fat categories:<br/>
+    <span style="position:relative; font-size:90%; left:150; color:black " class="not_orphan" acre:for="i,cat in fatcats"><li> <a href='http://fatcat.freebaseapps.com/index?catbox0=yes&cat=$cat.value'>$cat.value</a>  <br/></li> </span>
+        <a href="http://fatcat.freebaseapps.com/showheavies">more</a><br/>
+        <span style="font-size:10; color:grey"> This list generated periodically from <a href='http://fatcat.freebaseapps.com/findheavies'>here</a></span>
+  <br/>
+
+    <!--<img style='position:absolute; left:450; top:350; height:200px; width:190px;' src='http://farm3.static.flickr.com/2228/2187242989_2eacb23b1e.jpg'/>-->
+
+
+    <span style='position:absolute; left:520; top:250; width:280; color:grey;'>
+      wikipedia categories have a lot of data, but aren't <a href='http://www.cse.buffalo.edu/~rapaport/676/F01/icecreamontology.gif'>organised</a>. <br/>
+this app allows you to bring this data to freebase, where it may sleep righteously, forever.
+    </span>
+    <br/>
+  <span style="position:relative; font-size:90%; left:150;">
+
+    <img style=' height:200px; width:190px;' src='http://farm1.static.flickr.com/34/122530930_6e16f1eb5c.jpg'/>
+   <br/>
+     Be sharp,  mistakes can be made easily.
+    </span>
+
+    <span style="position:relative;top:20; font-size:60%; left:300; color:grey; ">
+     <a href="http://www.freebase.com/tools/appeditor/#app=${acre.environ.script_namespace}">source!</a> by <a href="http://www.freebase.com/view/user/spencermountain">spencermountain</a> </span>
+    <div class='bottom'></div>
+
+    ${acre.require("/user/spencermountain/spencerino/ganalytics").basic()}
+    </acre:block>
+
+ <!--login stuff-->
+   <acre:script>
+   var user = acre.freebase.get_user_info();
+   var return_url = encodeURIComponent(acre.environ.request_url);
+ </acre:script>
+<span acre:if="user" style="position:absolute;top:10; right:60;font-size:10; ">
+   Signed in as: <a href="http://freebase.com/view$user.id">$user.username</a> |
+   <a href="/acre/account/signout?onsucceed=$return_url">Sign Out</a>
+ </span>
+</body></html>

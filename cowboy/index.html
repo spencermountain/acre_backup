@@ -1,0 +1,58 @@
+<html>
+<head>
+<style>
+ body{padding:20;margin:20;text-align:center;color:#666;font-weight:normal;font-family:"Helvetica","Univers","Helvetica Neue",arial,helvetica,sans-serif; text-align:justify;font-size:32px;line-height:1.5em;padding-bottom:24px;letter-spacing:0.3pt;color:#808080;}
+ a{color:#80b0ff;}
+ </style>
+    <title>cowboy</title>
+    <link type="text/css" rel="stylesheet" href="http://freebaselibs.com/static/suggest/1.0.5/suggest.min.css">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+    <script type="text/javascript" src="http://freebaselibs.com/static/suggest/1.0.5/suggest.min.js"></script>
+    <script type="text/javascript">
+
+      jQuery(function($) {
+
+
+        //topic one
+        $("#suggestid")
+          .suggest({
+            "type": ["/location/country"]
+          })
+          .bind("fb-select",
+                function(e, data) {
+                  document.getElementById("country").value=data.id;
+                });
+
+        //type one
+        $("#suggestid2")
+          .suggest({
+            "type": ["/type/type"]
+          })
+          .bind("fb-select",
+                function(e, data) {
+                   document.getElementById("type").value=data.id;
+                });
+
+      });
+             </script>
+ </head>
+<body>
+
+  this app rode round the country, looking for locations to be inferrin'bout
+
+  <p></p>
+
+
+  <img style="width:80%" src="http://upload.wikimedia.org/wikipedia/commons/7/73/The_Cow_Boy_1888.jpg"/>
+
+  <form action="run" method="get">
+    country: <input type="text" id="suggestid" />
+    <input type="hidden" name="country" id="country"/>
+    <p></p>
+    type:
+    <input type="text" id="suggestid2" />
+    <input type="hidden" name="type" id="type"/>
+
+  </form>
+  but it wus jus'bout too reckless for yall freebasers. so it best be goin on, now
+</body>

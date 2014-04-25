@@ -1,0 +1,129 @@
+< html > < head > < /head>
+ <body onload="document.theform.submit();">
+   <acre:script> / / a script that adds country
+
+var cursor = acre.request.body_params.cursor || false; // /location/us_county
+var place = acre.request.body_params.country || ''; // /location/us_county
+var type = acre.request.body_params.type || ''; // /location/us_county
+//var place='/en/germany';
+//var type="/geography/lake";
+var found = 1;
+
+if (place == '' || type == '') {
+  var place = acre.request.params.country || ''; // /location/us_county
+  var type = acre.request.params.type || ''; // /location/us_county
+  //var place='/en/germany';
+}
+
+if (place != '' && type != '') {
+  var query = [{
+    "type": "/location/location",
+    "name": null,
+    "id": null,
+    "s:type": type,
+    "s:/location/location/containedby": [{
+      "name": null,
+      "id": place,
+      "optional": "forbidden"
+    }],
+    "/location/location/containedby": [{
+      "name": null,
+      "id": null,
+      "/location/location/containedby": [{
+        "name": null,
+        "id": place
+      }]
+    }]
+  }]
+
+  var townlist = [];
+  var town = '';
+  try {
+    if (cursor) {
+      var the = acre.freebase.mqlread(query, {
+        cursor: cursor
+      });
+    } //not first one
+    if (!cursor) {
+      var the = acre.freebase.mqlread(query, {
+        cursor: true
+      });
+    } //first one
+    cursor = the.cursor;
+
+    for (var i in the.result) { //acre.write(the.result[i].id);
+      townlist[i] = the.result[i].id;
+    }
+
+    // acre.write(JSON.stringify(the.result[0]));
+
+  } catch (e) {
+    acre.write(e);
+  }
+
+
+
+
+  //write them
+  if (townlist.length > 0) {
+    var writer = acre.require('/user/spencermountain/fatcat/universalwriter');
+    var output = writer.universalwriter(townlist, '/location/location', '/location/location/containedby', place);
+    // count edits made
+    var edits = 0;
+    if (output != null) {
+      var output = JSON.stringify(output);
+      var match = 'inserted';
+      for (var im = 0; im < output.length; im++) {
+        if (match == output.substr(im, match.length)) {
+          edits++;
+        }
+      } //for
+    }
+    if (edits > 0) {
+      acre.write('added ' + edits + ' new locations to ' + place);
+    }
+    if (edits == 0) {
+      acre.write('added no new locations to ' + place);
+    }
+
+    //big='';
+  }
+
+  if (!cursor) {
+    var found = 0;
+    var townlist = ['bout done all ah can do here, so best be stoppin.'];
+  }
+} else {
+  var found = 0;
+  var townlist = ['ya best be goin on home...'];
+} < /acre:script>
+   <br/ > < h2 > doin them $place up real good.. < /h2>
+   <img src="http:/ / upload.wikimedia.org / wikipedia / commons / thumb / f / f6 / Lasso1web.jpg / 220px - Lasso1web.jpg "/>
+   <span acre:for="
+the in townlist ">
+     $the <br/>
+   </span>
+   <span acre:if="
+found ">
+            <form action="
+" method="
+post "name="
+theform ">
+          <input type="
+hidden " name="
+cursor " value="
+$cursor " />
+          <input type="
+submit " value="
+read " />
+             </form>
+   </span>
+   <p></p>
+   <span style="
+display: block;
+position: relative;
+text - align: right;
+width: 100 % ">
+   <a href="
+index ">go on home..</a>
+   </span>

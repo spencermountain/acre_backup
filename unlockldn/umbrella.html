@@ -1,0 +1,140 @@
+    <html>
+    <head>
+      <style>
+      #fun{font-size:16px; color:grey;}
+      .badge{font-size:25px; background:steelblue; color:white;}
+      a{color:#80b0ff;}
+      </style>
+    <script src="./jquery.js"></script>
+    <script src="./d3.js"></script>
+
+    <script type="text/javascript">
+      $(function() {
+
+
+doit([{title:"Central line", value:50, colour:"#e82120"}, {title:"Piccadilly Line", value:50, colour:"steelblue"}],"#fun", "Holborn")
+
+doit([{title:"Central Line", value:50, colour:"#e82120"}],"#fun2", "Chancery Lane")
+
+
+doit([{title:"Piccadilly Line", value:50, colour:"steelblue"}],"#fun3", "Russel square")
+
+function doit(data, sel, title){
+       var topicid=getParameter('id') ||'/topic/london.1'
+      topicid=topicid.replace(/\/$/,'')
+
+
+              var html=title
+              $(sel+'title').html(html)
+
+
+        var d3_category20 = [
+          "#1f77b4", "#aec7e8",
+          "#ff7f0e", "#ffbb78",
+          "#2ca02c", "#98df8a",
+          "#d62728", "#ff9896",
+          "#9467bd", "#c5b0d5",
+          "#8c564b", "#c49c94",
+          "#e377c2", "#f7b6d2",
+          "#7f7f7f", "#c7c7c7",
+          "#bcbd22", "#dbdb8d",
+          "#17becf", "#9edae5"
+        ];
+
+        var w = 300, //canvas width
+            h = 300, //canvas height
+            r = 100; //radius of the circle my arc will follow
+    var sum=data.map(function(v){return v.value}).reduce(function(a,b){return a+b},0) || 1
+    var angle=d3.scale.linear().range([-(Math.PI / 2), Math.PI / 2]).domain([0,sum]);
+
+
+    data=data.map(function(v,i){
+      v.previous=data.slice(0,i).map(function(v){return v.value}).reduce(function(v,b){return v+b },0) ||0;
+      return v
+    })
+    console.log(data)
+
+d3.select("svg").html('')
+//svg stuff
+  var vis = d3.select(sel).append("svg")
+      .attr("width", w)
+      .attr("height", h)
+        .append("g")
+      .attr("transform", "translate(" + w / 2 + "," + h / 2 + ")");
+  var g= vis.selectAll("g")
+      .data(data)
+        .enter().append("g")
+      .attr("class", "arc");
+
+  var arc = d3.svg.arc()
+      .startAngle(function(d) { return  angle(d.previous); })
+      .endAngle(function(d) { return  angle(d.previous + d.value); })
+      .innerRadius(function(d) { return r; })
+      .outerRadius(function(d) { return .5 * r; })
+
+
+
+  g.append("path")
+      .style("fill", function(d,i){return d.colour})
+      .attr("d", arc)
+
+
+    var arcs=vis.selectAll(".arc")
+  arcs.append("svg:text")
+      .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+      .attr("dy", ".35em")
+      .attr("text-anchor", "middle")
+      .attr("font-size", "12px")
+      .attr("fill", "white")
+      .text(function(d, i) { return d.title||'' });
+
+    //hover
+      arcs.append("svg:title")
+      .text(function(d) { return d.title||'' });
+
+
+}
+
+
+        }).error(function(e){console.log('error')})
+
+        function getParameter(name) {
+            var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+            return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+        }
+    </script>
+    </head>
+    <body>
+
+<table id="tableid" style="width:100%; max-height:150px;">
+  <tr>
+    <td style="text-align:center;">
+
+<div style="color:grey; font-size:24px;  left:120px; top:150px;" id="funtitle"></div>
+<div style="color:grey;">good service</div>
+<div style="background:lightgreen; width:80px; position:relative; left:70px; height:5px;">&nbsp;</div>
+<div style="color:grey; font-size:24px;" id="fun"></div>
+
+    </td>
+    <td style="text-align:center;">
+<div style="color:grey; font-size:24px;  left:120px; top:150px;" id="fun2title"></div>
+<div style="color:grey;">good service</div>
+<div style="background:lightgreen; width:80px; position:relative; left:170px; height:5px;">&nbsp;</div>
+<div style="color:grey; font-size:24px;" id="fun2"></div>
+    </td>
+        <td style="text-align:center;">
+<div style="color:grey; font-size:24px;  left:120px; top:150px;" id="fun3title"></div>
+<div style="color:grey;">good service</div>
+<div style="background:lightgreen; width:80px; position:relative; left:170px; height:5px;">&nbsp;</div>
+<div style="color:grey; font-size:24px;" id="fun3"></div>
+    </td>
+  </tr>
+</table>
+
+
+
+
+
+
+  </body>
+  </html>

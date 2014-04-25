@@ -1,0 +1,183 @@
+<html>
+  <acre:script>
+    //{{location dec|51.52325052138487|-0.10921955108642578}}
+
+    //{{location dec|51.50899286722382|-0.1958388090133667}}
+    //{{location dec|51.52751259651922|-0.08953481912612915}}
+    //{{location dec|51.515334418997725|-0.14193445444107056}}
+
+
+     var lat = acre.request.params.lat || '51.515334418997725';
+    var lng = acre.request.params.lng || '-0.14193445444107056';
+
+
+     var lat = 51.5221090051861;
+  var  lng=-0.10929599404335022;
+
+    var url='https://api.foursquare.com/v2/venues/search?ll='+lat+','+lng+'&radius=500&categoryId=4bf58dd8d48988d16d941735&oauth_token=JYBSAF3BGP33BECMOQJAPTYCHFNS0MDSQS5Y3KPWLU5FGKSD&v=20120519'
+        var result=JSON.parse(acre.urlfetch(url).body);
+    result.response.venues=result.response.venues.sort(function(a,b){
+      return b.location.distance - a.location.distance
+        //   return a.stats.checkinsCount - b.stats.checkinsCount
+        }).reverse()
+
+      var venues= result.response.venues.filter(function(v){
+        return v.categories[0]
+          })
+          console.log(venues)
+  </acre:script>
+
+  <head>
+   <style>
+      body {
+   font-family: "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+   font-weight: 300;
+  }
+   #show {
+    position: fixed;
+       line-height:90%;
+    top: 50%;
+    max-width:300px;
+    left: 50%;
+    margin-top: -150px;
+       text-align:center;
+    margin-left: -150px;
+  }
+      </style>
+    <script src="./d3.js"></script>
+    <script src="./d3pie.js"></script>
+    <script src="./jquery.js"></script>
+    <script>
+
+      $(function() {
+
+        var data=${JSON.stringify(venues)}
+        console.log(data)
+
+          var json=data.map(function(v){
+            return {title:v.name, count:v.stats.checkinsCount}
+              })
+
+                //[{title:"yay", count:8},{title:"yayo", count:2}]
+
+              //    rendertext(data);
+
+
+        showpie(json.slice(0,5))
+          //          setTimeout(function(){},2000);
+
+
+                function showpie(all){
+
+
+                  var sel="#chart"
+                      $(sel).html('')
+
+                        var data=all.slice(0,10).map(function(c){return c.count})
+                            console.log(data)
+                              var size = 400
+                                  rdo = size;
+
+                  var w = rdo,
+                      h = rdo,
+                      r = Math.min(w, h) / 2,
+                      color = d3.scale.category20(),
+                      donut = d3.layout.pie();
+                  arc = d3.svg.arc().innerRadius(r * .6).outerRadius(r);
+
+
+                  var vis = d3.select(sel)
+                      .append("svg:svg")
+                      .data([data.sort(d3.descending)])
+                      .attr("width", w)
+                      .attr("height", h);
+
+                  var arcs = vis.selectAll("g.arc")
+                      .data(donut)
+                      .enter().append("svg:g")
+                      .attr("class", "arc")
+                      .attr("transform", "translate(" + r + "," + r + ")")
+                      .attr("d", arc)
+                      .attr("id", function(d, i){return all[i].title})
+                      .on("click", function(){
+                      })
+
+
+                      arcs.transition()
+                        .duration(2600)
+                        .attrTween("d", maketitle);
+
+                  function maketitle(b){
+                    arcs.append("svg:text")
+                      .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+                      .attr("dy", ".35em")
+                      .attr("text-anchor", "middle")
+                      .attr("font-size", "20px")
+                      .attr("fill", "white")
+                      // .attr("display", function(d) { return d.value > .15 ? null : "none"; })
+                      .text(function(d, i) { return all[i].title || '' });
+
+                  }
+
+                  //hover count
+                  arcs.append("svg:title")
+                    .text(function(s,i) { return all[i].count+' in '+all[i].title });
+
+
+
+                  var paths = arcs.append("svg:path")
+                      .attr("fill", function(d, i) { return color(i); });
+
+                  paths.transition()
+                    .duration(1000)
+                    .attrTween("d", tweenPie);
+
+
+
+                  function tweenPie(b) {
+                    b.innerRadius = 0;
+                    var i = d3.interpolate({startAngle: 0, endAngle: 0}, b);
+                    return function(t) {
+                      return arc(i(t));
+                    };
+                  }
+
+                  function untweenPie(b) {
+                    b.innerRadius = 0;
+                    var i = d3.interpolate(b,{startAngle: 0, endAngle: 0});
+                    return function(t) {
+                      return arc(i(t));
+                    };
+                  }
+
+                 $('#chart').toggle()
+                 $('#chart').animate({
+                    bottom: '200px'
+                  }, 2000, function() {
+                  })
+
+                }
+
+
+        setTimeout(function(){window.location='./tube'}, 10000)
+
+
+      })
+    </script>
+
+        <body style="color:white; font-size:65px;">
+
+          <div id="all">
+
+            <b><div id="show"
+              style="position:absolute; left:200px; top:700px;color:white; background:steelblue; font-size:35px;">
+            where people are eating
+            </div>
+          </b>
+
+            <div id="chart" style="display:none; position:absolute; left:45%; bottom:-200px;"></div>
+
+    </div>
+  </body>
+
+  </html>

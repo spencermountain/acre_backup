@@ -1,0 +1,109 @@
+  <acre:script>
+  var query= acre.request.params.query || 'arson cases in ontario since 2001';
+    </acre:script>
+
+<html>
+  <head>
+   <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0;" />
+    <link rel="search" type="application/opensearchdescription+xml" href="opensearch" title="CanLii" />
+
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+    <script>
+       $(document).ready(function(){
+
+         //http://www.canlii.org/eliisa/search.do?language=en&searchTitle=Search&sortOrder=relevance&searchPage=eliisa%2FmainPageSearch.vm&text=moose+jaw&id=&startDate=&endDate=&caselaw=courts
+         //init
+        var text = $("#query").val();
+         var url='merged.html?query='+text;
+         $("#answer").attr('src', url);
+
+
+
+
+          //close about
+          $("#about").click(function () {document.getElementById("about").style.display='none';
+          });
+
+         //examples
+         $(".exmple").click(function () {//alert($(this).html());
+           $("#query").val($(this).html());
+           run();
+           function run(){
+        var text = $("#query").val();
+         var url='merged.html?query='+text;
+         $("#answer").attr('src', url);
+        }
+         });
+
+
+    $("#query").keyup(function () {
+
+      try{window.clearTimeout(timeoutID);}catch(e){}//for fast typing
+      timeoutID = window.setTimeout(run, 800);
+      //
+        function run(){
+        var text = $("#query").val();
+         var url='merged.html?query='+text;
+         $("#answer").attr('src', url);
+        }
+
+    });
+
+  });
+      function toggle(el){var m=0;
+                        if( document.getElementById(el).style.display=='block')
+                        {document.getElementById(el).style.display='none'; m=1;}
+                        if( document.getElementById(el).style.display=='none'&&m==0)
+                        {document.getElementById(el).style.display='block';}
+                       }
+
+      function fillform(text)
+      {var x=document.getElementById("query");  //alert(x.innerHTML);
+       x.value=text;
+
+      }
+
+      //analytics
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-9009347-2");
+pageTracker._trackPageview();
+} catch(err) {}
+
+    </script>
+
+  </head>
+  <body>
+    <span style="color:grey; position:relative; left:600; font-size:10">   demo for lexum<br/>
+      <a href="http://www.freebase.com/tools/appeditor/#app=${acre.environ.script_namespace}">source</a> by <a href="http://www.freebase.com/view/user/spencermountain">spencer</a><br/>
+    </span>
+
+    <input type="text" style='height:60; position:relative;  font-size:27px; left:60; '  size='30' value="$query" length="50"  id="query" name="q" /><br/>
+
+
+    <!-- -- -->
+    <a href="#" style="position:relative; left:380;" onclick="toggle('examples');">examples</a>
+      <a href="about" style="position:relative; left:400;">about</a>
+
+    <br/>
+
+    <span id="examples" style="display:none; position:relative; text-align:left;  left:50; width:800;">
+
+     <a href="#" class="exmple"  >software patent cases in manitoba before 2001</a><br/>
+      <a href="#" class="exmple"  >figure skating</a><br/>
+     <a href="#" class="exmple"  >skateboarding laws</a><br/>
+     <a href="#" class="exmple"  >fire hydrant legislation in nova scotia</a><br/>
+     <a href="#" class="exmple"  > abortion cases since 1998 in bc</a><br/>
+        <a href="#" class="exmple"  > R. v. Mumby, 2006 ABCA 103</a>  - (if there's only one result, go to it)<br/>
+     <a href="#" class="exmple"  >Roe v. Wade, 410 U.S. 113 (1973)</a> - (match international citations)
+    </span>
+    <!-- -- -->
+
+    <iframe id="answer" style="border:0; width:100%; height:80%;" border="0" src=""></iframe>
+
+
+  </body>
+</html>

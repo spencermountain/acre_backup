@@ -1,0 +1,289 @@
+symbol,date,price
+Chancery Lane,Jan 0200,0
+Chancery Lane,Jan 0215,0
+Chancery Lane,Jan 0230,0
+Chancery Lane,Jan 0245,0
+Chancery Lane,Jan 0300,0
+Chancery Lane,Jan 0315,0
+Chancery Lane,Jan 0330,0
+Chancery Lane,Jan 0345,0
+Chancery Lane,Jan 0400,0
+Chancery Lane,Jan 0415,0
+Chancery Lane,Jan 0430,0
+Chancery Lane,Jan 0445,0
+Chancery Lane,Jan 0500,0
+Chancery Lane,Jan 0515,0
+Chancery Lane,Jan 0530,5
+Chancery Lane,Jan 0545,9
+Chancery Lane,Jan 0600,12
+Chancery Lane,Jan 0615,15
+Chancery Lane,Jan 0630,22
+Chancery Lane,Jan 0645,31
+Chancery Lane,Jan 0700,38
+Chancery Lane,Jan 0715,45
+Chancery Lane,Jan 0730,52
+Chancery Lane,Jan 0745,64
+Chancery Lane,Jan 0800,77
+Chancery Lane,Jan 0815,93
+Chancery Lane,Jan 0830,103
+Chancery Lane,Jan 0845,110
+Chancery Lane,Jan 0900,116
+Chancery Lane,Jan 0915,133
+Chancery Lane,Jan 0930,138
+Chancery Lane,Jan 0945,133
+Chancery Lane,Jan 1000,132
+Chancery Lane,Jan 1015,154
+Chancery Lane,Jan 1030,168
+Chancery Lane,Jan 1045,180
+Chancery Lane,Jan 1100,189
+Chancery Lane,Jan 1115,213
+Chancery Lane,Jan 1130,232
+Chancery Lane,Jan 1145,282
+Chancery Lane,Jan 1200,326
+Chancery Lane,Jan 1215,362
+Chancery Lane,Jan 1230,361
+Chancery Lane,Jan 1245,379
+Chancery Lane,Jan 1300,387
+Chancery Lane,Jan 1315,386
+Chancery Lane,Jan 1330,357
+Chancery Lane,Jan 1345,349
+Chancery Lane,Jan 1400,350
+Chancery Lane,Jan 1415,358
+Chancery Lane,Jan 1430,355
+Chancery Lane,Jan 1445,378
+Chancery Lane,Jan 1500,402
+Chancery Lane,Jan 1515,437
+Chancery Lane,Jan 1530,454
+Chancery Lane,Jan 1545,544
+Chancery Lane,Jan 1600,613
+Chancery Lane,Jan 1615,756
+Chancery Lane,Jan 1630,824
+Chancery Lane,Jan 1645,1056
+Chancery Lane,Jan 1700,1143
+Chancery Lane,Jan 1715,1380
+Chancery Lane,Jan 1730,1441
+Chancery Lane,Jan 1745,1538
+Chancery Lane,Jan 1800,1370
+Chancery Lane,Jan 1815,1226
+Chancery Lane,Jan 1830,996
+Chancery Lane,Jan 1845,836
+Chancery Lane,Jan 1900,683
+Chancery Lane,Jan 1915,565
+Chancery Lane,Jan 1930,452
+Chancery Lane,Jan 1945,383
+Chancery Lane,Jan 2000,326
+Chancery Lane,Jan 2015,299
+Chancery Lane,Jan 2030,274
+Chancery Lane,Jan 2045,262
+Chancery Lane,Jan 2100,237
+Chancery Lane,Jan 2115,225
+Chancery Lane,Jan 2130,214
+Chancery Lane,Jan 2145,197
+Chancery Lane,Jan 2200,162
+Chancery Lane,Jan 2215,140
+Chancery Lane,Jan 2230,126
+Chancery Lane,Jan 2245,120
+Chancery Lane,Jan 2300,123
+Chancery Lane,Jan 2315,126
+Chancery Lane,Jan 2330,109
+Chancery Lane,Jan 2345,81
+Chancery Lane,Jan 2400,57
+Chancery Lane,Jan 2415,30
+Chancery Lane,Jan 2430,7
+Chancery Lane,Jan 2445,0
+Chancery Lane,Jan 2500,0
+Chancery Lane,Jan 2515,0
+Chancery Lane,Jan 2530,0
+Chancery Lane,Jan 2545,0
+Holborn,Jan 0200,0
+Holborn,Jan 0215,0
+Holborn,Jan 0230,0
+Holborn,Jan 0245,0
+Holborn,Jan 0300,0
+Holborn,Jan 0315,0
+Holborn,Jan 0330,0
+Holborn,Jan 0345,0
+Holborn,Jan 0400,0
+Holborn,Jan 0415,0
+Holborn,Jan 0430,0
+Holborn,Jan 0445,0
+Holborn,Jan 0500,0
+Holborn,Jan 0515,9
+Holborn,Jan 0530,16
+Holborn,Jan 0545,22
+Holborn,Jan 0600,23
+Holborn,Jan 0615,29
+Holborn,Jan 0630,39
+Holborn,Jan 0645,55
+Holborn,Jan 0700,70
+Holborn,Jan 0715,87
+Holborn,Jan 0730,107
+Holborn,Jan 0745,134
+Holborn,Jan 0800,161
+Holborn,Jan 0815,189
+Holborn,Jan 0830,203
+Holborn,Jan 0845,207
+Holborn,Jan 0900,209
+Holborn,Jan 0915,232
+Holborn,Jan 0930,248
+Holborn,Jan 0945,262
+Holborn,Jan 1000,268
+Holborn,Jan 1015,288
+Holborn,Jan 1030,294
+Holborn,Jan 1045,321
+Holborn,Jan 1100,341
+Holborn,Jan 1115,359
+Holborn,Jan 1130,377
+Holborn,Jan 1145,494
+Holborn,Jan 1200,589
+Holborn,Jan 1215,634
+Holborn,Jan 1230,604
+Holborn,Jan 1245,639
+Holborn,Jan 1300,669
+Holborn,Jan 1315,695
+Holborn,Jan 1330,668
+Holborn,Jan 1345,673
+Holborn,Jan 1400,692
+Holborn,Jan 1415,718
+Holborn,Jan 1430,713
+Holborn,Jan 1445,778
+Holborn,Jan 1500,832
+Holborn,Jan 1515,893
+Holborn,Jan 1530,932
+Holborn,Jan 1545,1120
+Holborn,Jan 1600,1297
+Holborn,Jan 1615,1431
+Holborn,Jan 1630,1445
+Holborn,Jan 1645,1625
+Holborn,Jan 1700,1857
+Holborn,Jan 1715,2041
+Holborn,Jan 1730,2089
+Holborn,Jan 1745,2090
+Holborn,Jan 1800,1966
+Holborn,Jan 1815,1759
+Holborn,Jan 1830,1545
+Holborn,Jan 1845,1363
+Holborn,Jan 1900,1174
+Holborn,Jan 1915,1037
+Holborn,Jan 1930,914
+Holborn,Jan 1945,876
+Holborn,Jan 2000,835
+Holborn,Jan 2015,822
+Holborn,Jan 2030,759
+Holborn,Jan 2045,762
+Holborn,Jan 2100,728
+Holborn,Jan 2115,673
+Holborn,Jan 2130,568
+Holborn,Jan 2145,556
+Holborn,Jan 2200,612
+Holborn,Jan 2215,658
+Holborn,Jan 2230,591
+Holborn,Jan 2245,504
+Holborn,Jan 2300,461
+Holborn,Jan 2315,434
+Holborn,Jan 2330,354
+Holborn,Jan 2345,274
+Holborn,Jan 2400,213
+Holborn,Jan 2415,122
+Holborn,Jan 2430,40
+Holborn,Jan 2445,0
+Holborn,Jan 2500,0
+Holborn,Jan 2515,0
+Holborn,Jan 2530,0
+Holborn,Jan 2545,0
+Russell Square,Jan 0200,0
+Russell Square,Jan 0215,0
+Russell Square,Jan 0230,0
+Russell Square,Jan 0245,0
+Russell Square,Jan 0300,0
+Russell Square,Jan 0315,0
+Russell Square,Jan 0330,0
+Russell Square,Jan 0345,0
+Russell Square,Jan 0400,0
+Russell Square,Jan 0415,0
+Russell Square,Jan 0430,0
+Russell Square,Jan 0445,0
+Russell Square,Jan 0500,0
+Russell Square,Jan 0515,6
+Russell Square,Jan 0530,11
+Russell Square,Jan 0545,17
+Russell Square,Jan 0600,17
+Russell Square,Jan 0615,23
+Russell Square,Jan 0630,29
+Russell Square,Jan 0645,41
+Russell Square,Jan 0700,51
+Russell Square,Jan 0715,69
+Russell Square,Jan 0730,84
+Russell Square,Jan 0745,104
+Russell Square,Jan 0800,135
+Russell Square,Jan 0815,172
+Russell Square,Jan 0830,201
+Russell Square,Jan 0845,222
+Russell Square,Jan 0900,239
+Russell Square,Jan 0915,312
+Russell Square,Jan 0930,363
+Russell Square,Jan 0945,365
+Russell Square,Jan 1000,323
+Russell Square,Jan 1015,315
+Russell Square,Jan 1030,283
+Russell Square,Jan 1045,251
+Russell Square,Jan 1100,224
+Russell Square,Jan 1115,211
+Russell Square,Jan 1130,193
+Russell Square,Jan 1145,202
+Russell Square,Jan 1200,221
+Russell Square,Jan 1215,245
+Russell Square,Jan 1230,252
+Russell Square,Jan 1245,280
+Russell Square,Jan 1300,302
+Russell Square,Jan 1315,303
+Russell Square,Jan 1330,271
+Russell Square,Jan 1345,270
+Russell Square,Jan 1400,282
+Russell Square,Jan 1415,287
+Russell Square,Jan 1430,280
+Russell Square,Jan 1445,325
+Russell Square,Jan 1500,367
+Russell Square,Jan 1515,394
+Russell Square,Jan 1530,390
+Russell Square,Jan 1545,469
+Russell Square,Jan 1600,527
+Russell Square,Jan 1615,564
+Russell Square,Jan 1630,528
+Russell Square,Jan 1645,602
+Russell Square,Jan 1700,665
+Russell Square,Jan 1715,695
+Russell Square,Jan 1730,631
+Russell Square,Jan 1745,609
+Russell Square,Jan 1800,586
+Russell Square,Jan 1815,566
+Russell Square,Jan 1830,521
+Russell Square,Jan 1845,480
+Russell Square,Jan 1900,428
+Russell Square,Jan 1915,389
+Russell Square,Jan 1930,349
+Russell Square,Jan 1945,346
+Russell Square,Jan 2000,344
+Russell Square,Jan 2015,372
+Russell Square,Jan 2030,368
+Russell Square,Jan 2045,377
+Russell Square,Jan 2100,331
+Russell Square,Jan 2115,264
+Russell Square,Jan 2130,191
+Russell Square,Jan 2145,179
+Russell Square,Jan 2200,174
+Russell Square,Jan 2215,161
+Russell Square,Jan 2230,147
+Russell Square,Jan 2245,155
+Russell Square,Jan 2300,155
+Russell Square,Jan 2315,140
+Russell Square,Jan 2330,113
+Russell Square,Jan 2345,87
+Russell Square,Jan 2400,56
+Russell Square,Jan 2415,29
+Russell Square,Jan 2430,9
+Russell Square,Jan 2445,1
+Russell Square,Jan 2400,0
+Russell Square,Jan 2415,0
+Russell Square,Jan 2430,0
+Russell Square,Jan 2545,0
